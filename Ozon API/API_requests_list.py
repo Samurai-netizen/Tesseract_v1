@@ -9,10 +9,7 @@ async def v1_warehouse_list() -> None:
     async with niquests.AsyncSession() as s:
         method = "/v1/warehouse/list"
         print(url + method)
-        payload = {"offer_id": "DOM6B", "product_id": 1855823959}
-        payload = json.dumps(payload)
-
-        r = await s.post(url + method, headers=headers, params=payload)
+        r = await s.post(url + method, headers=headers)
         print(r.json())
         for item in r.json()['result']:
             print(item['name'])
@@ -24,22 +21,32 @@ async def v5_product_info_prices() -> None:
         method = "/v5/product/info/prices"
         print(url + method)
         payload = {
-          "cursor": "string",
           "filter": {
-            "offer_id": [
-              "DOM6B"
-            ],
             "product_id": [
-              "1855823959"
+              "1383406177"
             ],
             "visibility": "ALL"
           },
           "limit": 1
         }
-        payload = json.dumps(payload)
 
-        r = await s.post(url + method, headers=headers, params=payload)
+        r = await s.post(url + method, headers=headers, json=payload)
+        for item in r.json()['items']:
+            print(item['price'])
+
+        print("--------------------------------------------------------------")
+
+async def v1_product_info_stocks_by_warehouse_fbs() -> None:
+    async with niquests.AsyncSession() as s:
+        method = "/v1/product/info/stocks-by-warehouse/fbs"
+        print(url + method)
+        # payload = {"sku": ["1855823959", "1775015354"]}
+        payload = {"sku": ["1855823959"]}
+
+        r = await s.post(url + method, headers=headers, json=payload)
         print(r.json())
+        for item in r.json()['result']:
+            print("В наличии, шт:", item['present'], "| Зарезервировано, шт:",  item['reserved'], "| Склад:", item['warehouse_name'])
 
         print("--------------------------------------------------------------")
 
