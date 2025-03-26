@@ -23,7 +23,7 @@ async def v5_product_info_prices() -> None:
         payload = {
           "filter": {
             "product_id": [
-              "1383406177"
+              "1855823959"
             ],
             "visibility": "ALL"
           },
