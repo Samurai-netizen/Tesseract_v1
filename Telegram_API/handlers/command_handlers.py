@@ -4,10 +4,10 @@ from aiogram.filters import Command
 
 from Telegram_API.chat_DB import devDBinit, firstInit, stateUpdate, stateFetch
 
-router = Router()
+command_router = Router()
 
 
-@router.message(Command("ReloadChatStateDB"))
+@command_router.message(Command("ReloadChatStateDB"))
 async def reload_chat_state_db_handler(msg: Message):
     try:
         devDBinit()
@@ -16,7 +16,7 @@ async def reload_chat_state_db_handler(msg: Message):
         await msg.answer(f"Произошла ошибка при создании/обновлении БД: {e}")
 
 
-@router.message(Command("start"))
+@command_router.message(Command("start"))
 async def start_handler(msg: Message):
     try:
         firstInit(msg.from_user.id, msg.from_user.first_name, "start")
@@ -25,7 +25,7 @@ async def start_handler(msg: Message):
         await msg.answer(f"Произошла ошибка при инициализации: {e}")
 
 
-@router.message(Command("testcom"))
+@command_router.message(Command("testcom"))
 async def testcom_handler(msg: Message):
     try:
         state = stateFetch(msg.from_user.id)
@@ -37,7 +37,7 @@ async def testcom_handler(msg: Message):
         await msg.answer(f"Произошла ошибка при получении состояния: {e}")
 
 
-@router.message(Command("state1"))
+@command_router.message(Command("state1"))
 async def state1_handler(msg: Message):
     try:
         state = "1"
@@ -48,7 +48,7 @@ async def state1_handler(msg: Message):
         await msg.answer(f"Произошла ошибка при обновлении состояния: {e}")
 
 
-@router.message(Command("state2"))
+@command_router.message(Command("state2"))
 async def state2_handler(msg: Message):
     try:
         state = "2"
@@ -59,7 +59,7 @@ async def state2_handler(msg: Message):
         await msg.answer(f"Произошла ошибка при обновлении состояния: {e}")
 
 
-@router.message()
+@command_router.message()
 async def message_handler(msg: Message):
     try:
         await msg.answer(f"Твой ID: {msg.from_user.id}")
