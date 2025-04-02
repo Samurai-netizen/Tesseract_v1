@@ -1,5 +1,3 @@
-print("hello")
-
 from sqlalchemy import create_engine
 from sqlalchemy import insert, select
 from pymysql import connect
@@ -12,9 +10,13 @@ from sqlalchemy.orm import sessionmaker
 
 import asyncio
 
+from config import MYSQL_ADDRESS
+
+print("DB_Conn.py is running")
+
 async def DB_test() -> None:
 
-    engine = create_engine('mysql+pymysql://freedb_SamuraiDev:ymBquG!QmPreX2!@sql.freedb.tech:3306/freedb_warehouse')  # , echo=True
+    engine = create_engine(MYSQL_ADDRESS)  # , echo=True
 
     metadata.create_all(engine)
 

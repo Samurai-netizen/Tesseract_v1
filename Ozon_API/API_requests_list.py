@@ -2,8 +2,10 @@ import asyncio
 import niquests
 import json
 
+from config import HEADERS
+
 url = "https://api-seller.ozon.ru"
-headers = {'Host': 'api-seller.ozon.ru', 'Client-Id': '2435732', 'Api-Key': '2ddf55f0-05e5-484e-9655-d424f72a0e82', "Content-Type": "application/json"}
+headers = HEADERS
 
 async def v1_warehouse_list() -> None:
     async with niquests.AsyncSession() as s:

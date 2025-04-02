@@ -11,7 +11,8 @@ from Telegram_API.handlers.command_handlers import command_router
 from Telegram_API.handlers.mainDB_handlers import mainDB_router
 
 
-async def main():
+async def startTelebot():
+    logging.basicConfig(level=logging.INFO)
     bot = Bot(token=config.BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_routers(command_router, mainDB_router)
@@ -20,5 +21,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    asyncio.run(main())
+    asyncio.run(startTelebot())
