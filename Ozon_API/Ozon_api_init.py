@@ -8,7 +8,7 @@ print("Ozon_api_init.py is running")
 async def main() -> None:
     await v1_warehouse_list()
     await v5_product_info_prices()
-    await v1_product_info_stocks_by_warehouse_fbs()
+    await v1_product_info_stocks_by_warehouse_fbs("1855823959")
     await DB_test()
 
 

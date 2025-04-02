@@ -59,9 +59,10 @@ async def state2_handler(msg: Message):
         await msg.answer(f"Произошла ошибка при обновлении состояния: {e}")
 
 
-@command_router.message()
-async def message_handler(msg: Message):
-    try:
-        await msg.answer(f"Твой ID: {msg.from_user.id}")
-    except Exception as e:
-        await msg.answer(f"Произошла ошибка при обработке сообщения: {e}")
+@command_router.message(Command("check_stocks"))
+async def state2_handler(msg: Message):
+    state = "check_stocks_1"
+    stateUpdate(msg.from_user.id, msg.from_user.first_name, state)
+    await msg.answer("Меню проверки остатков на складах Озон. Введите артикул товара, который хотите проверить:")
+
+

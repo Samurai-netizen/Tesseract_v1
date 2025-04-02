@@ -38,17 +38,20 @@ async def v5_product_info_prices() -> None:
 
         print("--------------------------------------------------------------")
 
-async def v1_product_info_stocks_by_warehouse_fbs() -> None:
+async def v1_product_info_stocks_by_warehouse_fbs(sku):
     async with niquests.AsyncSession() as s:
         method = "/v1/product/info/stocks-by-warehouse/fbs"
         print(url + method)
         # payload = {"sku": ["1855823959", "1775015354"]}
-        payload = {"sku": ["1855823959"]}
+        payload = {"sku": [f"{sku}"]}
 
         r = await s.post(url + method, headers=headers, json=payload)
         print(r.json())
+        output = []
         for item in r.json()['result']:
-            print("В наличии, шт:", item['present'], "| Зарезервировано, шт:",  item['reserved'], "| Склад:", item['warehouse_name'])
+            tmp = ("В наличии, шт:", item['present'], "| Зарезервировано, шт:",  item['reserved'], "| Склад:", item['warehouse_name'])
+            output.append(tmp)
 
         print("--------------------------------------------------------------")
+        return output
 
