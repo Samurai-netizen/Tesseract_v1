@@ -7,7 +7,7 @@ from aiogram.enums.parse_mode import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 
 import config
-from handlers import router
+from Telegram_API.handlers.command_handlers import router
 
 
 async def main():
