@@ -53,17 +53,17 @@ async def DB_test() -> None:
     """
 
 
-async def db_insert(article, amount):  #id=3, article='DOMB', amount=77, buy_price_rmb=2000, margin=24.4
+async def db_insert(article, amount, sku):  #id=3, article='DOMB', amount=77, buy_price_rmb=2000, margin=24.4
 
-    print("data_to_insert", article, amount)
+    print("data_to_insert", article, amount, sku)
 
     data_to_insert = {
-        'id': 1,
+        'id': sku,
         'article': article,
         'amount': amount
     }
 
-    required_fields = ["article"]
+    required_fields = ["article", "amount", "id"]
     for field in required_fields:
         if field not in data_to_insert or not data_to_insert[field]:
             print(f"Отсутствует обязательное поле: {field}")

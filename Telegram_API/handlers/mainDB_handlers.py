@@ -2,7 +2,7 @@ from aiogram import types, F, Router
 from aiogram.types import Message
 from aiogram.filters import Command
 
-from Telegram_API.chat_DB import devDBinit, firstInit, stateUpdate, stateFetch, newAmount, newArticle, fetchArgs
+from Telegram_API.chat_DB import devDBinit, firstInit, stateUpdate, stateFetch, newAmount, newArticle, fetchArgs, newSKUbond, newSKUaddChatdb
 
 from Database.DB_Conn import db_insert
 
@@ -26,11 +26,12 @@ async def message_handler(msg: Message):
     match current_state:
 
         case "start":
-            print("---Start case detected")
+            print("---Start case detected (placeholder idk)")
 
         case "check_stocks_fbs_1":
             if msg.text != "Назад":
                 output = await v1_product_info_stocks_by_warehouse_fbs(msg.text)
+                print(output)
                 await msg.answer(f"{output}")
             else:
                 stateUpdate(msg.from_user.id, msg.from_user.first_name, "homescreen")
@@ -49,11 +50,26 @@ async def message_handler(msg: Message):
                 newAmount(msg.from_user.id, msg.text)
                 stateUpdate(msg.from_user.id, msg.from_user.first_name, "add_new_item_pcs_to_db_3")
                 await msg.answer(f'Данные будут введены в систему учёта склада')
-                article, amount = fetchArgs(msg.from_user.id)
-                await db_insert(article, amount)
+                article, amount, sku = fetchArgs(msg.from_user.id)
+                await db_insert(article, amount, sku)
             else:
                 stateUpdate(msg.from_user.id, msg.from_user.first_name, "homescreen")
 
+        case "declare_new_item_to_db_1":
+            if msg.text != "Назад":
+                stateUpdate(msg.from_user.id, msg.from_user.first_name, "declare_new_item_to_db_2")
+                await msg.answer(f'Введите артикул товара, который хотите добавить:')
+                newSKUaddChatdb(msg.from_user.id, msg.text)
+            else:
+                stateUpdate(msg.from_user.id, msg.from_user.first_name, "homescreen")
+
+        case "declare_new_item_to_db_2":
+            if msg.text != "Назад":
+                stateUpdate(msg.from_user.id, msg.from_user.first_name, "add_new_item_pcs_to_db_3")
+                await msg.answer(f'Новая пара SKU-артикул добавлена. Теперь вы можете добавить остатки товара')
+                newSKUbond(msg.from_user.id, msg.text)
+            else:
+                stateUpdate(msg.from_user.id, msg.from_user.first_name, "homescreen")
 
     try:
         state = stateFetch(msg.from_user.id)

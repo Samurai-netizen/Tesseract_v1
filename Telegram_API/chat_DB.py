@@ -12,11 +12,13 @@ def devDBinit():
             id INTEGER PRIMARY KEY,
             name TEXT,
             state TEXT NOT NULL,
+            iddict TEXT,
             whid TEXT,
             article TEXT,
             amount INTEGER,
             buy_price_rmb INTEGER,
-            margin INTEGER
+            margin INTEGER,
+            sku TEXT
             )
             ''')
 
@@ -24,7 +26,7 @@ def devDBinit():
     except sqlite3.Error as e:
         print(f"Ошибка при работе с базой данных: {e}")
     except Exception as e:
-        print(f"Произошла ошибка: {e}")
+        print(f"Произошла ошибка в devDBinit: {e}")
 
 def devDB_DROP():
     try:
@@ -40,25 +42,24 @@ def devDB_DROP():
     except sqlite3.Error as e:
         print(f"Ошибка при работе с базой данных: {e}")
     except Exception as e:
-        print(f"Произошла ошибка: {e}")
+        print(f"Произошла ошибка в devDB_DROP: {e}")
 
 
 
 def firstInit(id, name, state):
-    whid = 1
     print(id, name, state)
     try:
         with sqlite3.connect('chat_state.db') as connection:
             cursor = connection.cursor()
             cursor.execute('''
-                INSERT INTO ChatState (id, name, state, whid)
-                VALUES(?, ?, ?, ?)
+                INSERT INTO ChatState (id, name, state)
+                VALUES(?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET state = ?;
-            ''', (id, name, state, whid, state))
+            ''', (id, name, state, state))
     except sqlite3.Error as e:
         print(f"Ошибка в firstInit: {e}")
     except Exception as e:
-        print(f"Общая ошибка: {e}")
+        print(f"Общая ошибка блока firstInit: {e}")
     else:
         print("First init done")
 
@@ -75,7 +76,7 @@ def stateUpdate(id, name, state):
     except sqlite3.Error as e:
         print(f"Ошибка в stateUpdate: {e}")
     except Exception as e:
-        print(f"Общая ошибка: {e}")
+        print(f"Общая ошибка блока stateUpdate: {e}")
     else:
         print("Update state done")
 
@@ -92,7 +93,7 @@ def stateFetch(id):
         print(f"Ошибка в stateFetch: {e}")
         return None
     except Exception as e:
-        print(f"Общая ошибка: {e}")
+        print(f"Общая ошибка блока stateFetch: {e}")
         return None
     else:
         print("Fetching state done")
@@ -112,7 +113,7 @@ def newArticle(id, article):
     except sqlite3.Error as e:
         print(f"Ошибка в newArticle: {e}")
     except Exception as e:
-        print(f"Общая ошибка: {e}")
+        print(f"Общая ошибка блока newArticle: {e}")
     else:
         print("Adding new 'article' done")
 
@@ -129,7 +130,7 @@ def newAmount(id, amount):
     except sqlite3.Error as e:
         print(f"Ошибка в newAmount: {e}")
     except Exception as e:
-        print(f"Общая ошибка: {e}")
+        print(f"Общая ошибка блока newAmount: {e}")
     else:
         print("Adding new 'amount' done")
 
@@ -148,13 +149,89 @@ def fetchArgs(id):
                    ''', (int(id),))
             amount_row = cursor.fetchone()
             amount = amount_row[0] if amount_row else None
+            connection.row_factory = sqlite3.Row
+            cursor.execute('''
+                   SELECT iddict FROM ChatState WHERE id = ?;
+                   ''', (int(id),))
+            result = cursor.fetchone()
+
+            if not (result is None or not result[0]):  # Если есть запись
+                iddict = json.loads(result[0])
+                sku = iddict[article]
+                print("iddict", iddict)
 
     except sqlite3.Error as e:
         print(f"Ошибка в fetchArgs: {e}")
     except Exception as e:
-        print(f"Общая ошибка: {e}")
+        print(f"Общая ошибка блока fetchArgs: {e}")
     else:
         print("Fetch args done")
-        print("Аргументы для вставки из Sqlite: ", article, amount)
+        print("Аргументы для вставки из Sqlite: ", article, amount, iddict)
 
-        return article, amount #if args else None
+        return article, amount, sku #if args else None
+
+
+def newSKUaddChatdb(id, sku):
+    try:
+        with sqlite3.connect('chat_state.db') as connection:
+            cursor = connection.cursor()
+            cursor.execute('''
+                UPDATE ChatState
+                SET sku = ?
+                WHERE id = ?;
+            ''', (sku, id))
+            connection.commit()
+    except sqlite3.Error as e:
+        print(f"Ошибка в newSKUbond: {e}")
+    except Exception as e:
+        print(f"Общая ошибка блока newSKUaddChatdb: {e}")
+    else:
+        print("Adding new pair article-SKU done")
+
+
+def newSKUbond(id, article):
+    try:
+        with sqlite3.connect('chat_state.db') as connection:
+            connection.row_factory = sqlite3.Row
+            cursor = connection.cursor()
+            cursor.execute('''
+               SELECT sku FROM ChatState WHERE id = ?;
+               ''', (int(id),))
+            sku_row = cursor.fetchone()
+            sku = sku_row['sku'] if sku_row else None
+            print("SKU:", sku)
+
+            cursor = connection.cursor()
+            cursor.execute('''
+               SELECT iddict FROM ChatState WHERE id = ?;
+               ''', (int(id),))
+            result = cursor.fetchone()
+
+            if not (result is None or not result[0]): # Если есть запись
+                iddict = json.loads(result[0])
+                sku = iddict[article]
+                print("iddict", iddict)
+
+            if result is None or not result[0]: # Если нет записи
+                print("Запись не найдена или iddict пуст.")
+                iddict = {}
+
+            print("SKU для article", sku)
+
+            iddict[article] = sku
+            print("Обновленный iddict", iddict)
+
+            cursor.execute('''
+                UPDATE ChatState
+                SET iddict = ?
+                WHERE id = ?
+            ''', (json.dumps(iddict), id))
+            connection.commit()
+    except sqlite3.Error as e:
+        print(f"Ошибка sqlite в newSKUbond: {e}")
+    except json.JSONDecodeError as e:
+        print(f"Ошибка декодирования JSON в newSKUbond: {e}")
+    #except Exception as e:
+        #print(f"Общая ошибка блока newSKUbond: {e}")
+    else:
+        print("Adding new pair article-SKU done")

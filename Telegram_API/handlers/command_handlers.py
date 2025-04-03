@@ -15,6 +15,7 @@ async def reload_chat_state_db_handler(msg: Message):
     except Exception as e:
         await msg.answer(f"Произошла ошибка при создании/обновлении БД: {e}")
 
+
 @command_router.message(Command("drop_chat_state_db"))
 async def reload_chat_state_db_handler(msg: Message):
     try:
@@ -79,3 +80,8 @@ async def add_new_item_pcs_to_db_handler(msg: Message):
     await msg.answer("Меню добавления закупленных товаров в БД склада. Введите артикул товара, который хотите добавить:")
 
 
+@command_router.message(Command("declare_new_item_to_db"))
+async def declare_new_item_to_db(msg: Message):
+    state = "declare_new_item_to_db_1"
+    stateUpdate(msg.from_user.id, msg.from_user.first_name, state)
+    await msg.answer("Меню добавления новых товаров в БД склада. Введите SKU товара, который хотите добавить:")
