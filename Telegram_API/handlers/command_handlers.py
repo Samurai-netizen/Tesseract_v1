@@ -2,16 +2,24 @@ from aiogram import types, F, Router
 from aiogram.types import Message
 from aiogram.filters import Command
 
-from Telegram_API.chat_DB import devDBinit, firstInit, stateUpdate, stateFetch
+from Telegram_API.chat_DB import devDBinit, firstInit, stateUpdate, stateFetch, devDB_DROP
 
 command_router = Router()
 
 
-@command_router.message(Command("ReloadChatStateDB"))
+@command_router.message(Command("reload_chat_state_db"))
 async def reload_chat_state_db_handler(msg: Message):
     try:
         devDBinit()
-        await msg.answer("`Cоздана/обновлена БД для хранения состояний чатов`")
+        await msg.answer("```Cоздана/обновлена БД для хранения состояний чатов```")
+    except Exception as e:
+        await msg.answer(f"Произошла ошибка при создании/обновлении БД: {e}")
+
+@command_router.message(Command("drop_chat_state_db"))
+async def reload_chat_state_db_handler(msg: Message):
+    try:
+        devDB_DROP()
+        await msg.answer("```Удалена БД для хранения состояний чатов```")
     except Exception as e:
         await msg.answer(f"Произошла ошибка при создании/обновлении БД: {e}")
 
@@ -40,8 +48,7 @@ async def testcom_handler(msg: Message):
 @command_router.message(Command("state1"))
 async def state1_handler(msg: Message):
     try:
-        state = "1"
-        stateUpdate(msg.from_user.id, msg.from_user.first_name, state)
+        stateUpdate(msg.from_user.id, msg.from_user.first_name, "1")
         current_state = stateFetch(msg.from_user.id)
         await msg.answer(f"Текущее состояние чата: {current_state}")
     except Exception as e:
@@ -51,18 +58,24 @@ async def state1_handler(msg: Message):
 @command_router.message(Command("state2"))
 async def state2_handler(msg: Message):
     try:
-        state = "2"
-        stateUpdate(msg.from_user.id, msg.from_user.first_name, state)
+        stateUpdate(msg.from_user.id, msg.from_user.first_name, "2")
         current_state = stateFetch(msg.from_user.id)
         await msg.answer(f"Текущее состояние чата: {current_state}")
     except Exception as e:
         await msg.answer(f"Произошла ошибка при обновлении состояния: {e}")
 
 
-@command_router.message(Command("check_stocks"))
-async def state2_handler(msg: Message):
-    state = "check_stocks_1"
+@command_router.message(Command("check_stocks_fbs"))
+async def check_stocks_fbs_handler(msg: Message):
+    state = "check_stocks_fbs_1"
     stateUpdate(msg.from_user.id, msg.from_user.first_name, state)
     await msg.answer("Меню проверки остатков на складах Озон. Введите артикул товара, который хотите проверить:")
+
+
+@command_router.message(Command("add_new_item_pcs_to_db"))
+async def add_new_item_pcs_to_db_handler(msg: Message):
+    state = "add_new_item_pcs_to_db_1"
+    stateUpdate(msg.from_user.id, msg.from_user.first_name, state)
+    await msg.answer("Меню добавления закупленных товаров в БД склада. Введите артикул товара, который хотите добавить:")
 
 

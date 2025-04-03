@@ -14,14 +14,14 @@ from config import MYSQL_ADDRESS
 
 print("DB_Conn.py is running")
 
+engine = create_engine(MYSQL_ADDRESS)  # , echo=True
+
+metadata.create_all(engine)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+app = FastAPI()
+
 async def DB_test() -> None:
-
-    engine = create_engine(MYSQL_ADDRESS)  # , echo=True
-
-    metadata.create_all(engine)
-
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    app = FastAPI()
 
     with engine.connect() as connection:
         try:
@@ -52,6 +52,33 @@ async def DB_test() -> None:
     
     """
 
+
+async def db_insert(article, amount):  #id=3, article='DOMB', amount=77, buy_price_rmb=2000, margin=24.4
+
+    print("data_to_insert", article, amount)
+
+    data_to_insert = {
+        'id': 1,
+        'article': article,
+        'amount': amount
+    }
+
+    required_fields = ["article"]
+    for field in required_fields:
+        if field not in data_to_insert or not data_to_insert[field]:
+            print(f"Отсутствует обязательное поле: {field}")
+            return "error"
+
+    with engine.connect() as connection:
+        try:
+            insert_query = insert(goods)
+            connection.execute(insert_query, data_to_insert)
+            connection.commit()
+            print("Inserted")
+        except Exception as e:
+            print(f"Insert failure: {e}")
+
+    return "done"
 
 if __name__ == "__main__":
     asyncio.run(DB_test())
