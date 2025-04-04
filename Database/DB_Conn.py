@@ -25,7 +25,7 @@ async def DB_test() -> None:
 
     with engine.connect() as connection:
         try:
-            insert_query = insert(goods).values(id=3, article='DOMB', amount=77, buy_price_rmb=2000, margin=24.4)
+            insert_query = insert(goods).values(id=3, article='NEWITEM', amount=77, buy_price_rmb=2000, margin=24.4)
             connection.execute(insert_query)
             connection.commit()
             print("inserted")
