@@ -154,11 +154,19 @@ def fetchArgs(id):
                    SELECT iddict FROM ChatState WHERE id = ?;
                    ''', (int(id),))
             result = cursor.fetchone()
+            #result = result_row[0] if result_row else None
+            #print("result: ", result)
+            #print("Type: ", type(result))
 
             if not (result is None or not result[0]):  # Если есть запись
                 iddict = json.loads(result[0])
                 sku = iddict[article]
-                print("iddict", iddict)
+                #print("iddict", iddict)
+                #print("sku", sku)
+                #print("article: ", article)
+
+            if result is None or not result[0]:
+                raise Exception("В базе данных ещё нет пар ключ-значение")
 
     except sqlite3.Error as e:
         print(f"Ошибка в fetchArgs: {e}")
@@ -166,40 +174,40 @@ def fetchArgs(id):
         print(f"Общая ошибка блока fetchArgs: {e}")
     else:
         print("Fetch args done")
-        print("Аргументы для вставки из Sqlite: ", article, amount, iddict)
+        print("Аргументы для вставки из Sqlite: ", article, amount, sku, iddict)
 
-        return article, amount, sku #if args else None
+        return [article, amount, sku] #if args else None
 
 
-def newSKUaddChatdb(id, sku):
+def newSKUaddChatdb(id, article):
     try:
         with sqlite3.connect('chat_state.db') as connection:
             cursor = connection.cursor()
             cursor.execute('''
                 UPDATE ChatState
-                SET sku = ?
+                SET article = ?
                 WHERE id = ?;
-            ''', (sku, id))
+            ''', (article, id))
             connection.commit()
     except sqlite3.Error as e:
         print(f"Ошибка в newSKUbond: {e}")
     except Exception as e:
         print(f"Общая ошибка блока newSKUaddChatdb: {e}")
     else:
-        print("Adding new pair article-SKU done")
+        print("Adding article for new pair article-SKU done (1/2)")
 
 
-def newSKUbond(id, article):
+def newSKUbond(id, sku):
     try:
         with sqlite3.connect('chat_state.db') as connection:
             connection.row_factory = sqlite3.Row
             cursor = connection.cursor()
             cursor.execute('''
-               SELECT sku FROM ChatState WHERE id = ?;
+               SELECT article FROM ChatState WHERE id = ?;
                ''', (int(id),))
-            sku_row = cursor.fetchone()
-            sku = sku_row['sku'] if sku_row else None
-            print("SKU:", sku)
+            article_row = cursor.fetchone()
+            article = article_row['article'] if article_row else None
+            print("Article:", article)
 
             cursor = connection.cursor()
             cursor.execute('''
@@ -209,14 +217,14 @@ def newSKUbond(id, article):
 
             if not (result is None or not result[0]): # Если есть запись
                 iddict = json.loads(result[0])
-                sku = iddict[article]
+                article = iddict[article]
                 print("iddict", iddict)
 
             if result is None or not result[0]: # Если нет записи
                 print("Запись не найдена или iddict пуст.")
                 iddict = {}
 
-            print("SKU для article", sku)
+            print("Article для SKU", article)
 
             iddict[article] = sku
             print("Обновленный iddict", iddict)
@@ -234,4 +242,4 @@ def newSKUbond(id, article):
     #except Exception as e:
         #print(f"Общая ошибка блока newSKUbond: {e}")
     else:
-        print("Adding new pair article-SKU done")
+        print("Adding new pair article-SKU done (2/2)")

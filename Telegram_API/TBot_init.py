@@ -12,13 +12,21 @@ from Telegram_API.handlers.mainDB_handlers import mainDB_router
 
 
 async def startTelebot():
-    logging.basicConfig(level=logging.INFO)
-    bot = Bot(token=config.BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_routers(command_router, mainDB_router)
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
 
 
+async def message_sender(chat_id, message):
+    try:
+        await bot.send_message(chat_id, message)
+        print("Сообщение отправлено успешно.")
+    except Exception as e:
+        print(f"Ошибка при отправке сообщения: {e}")
+
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    bot = Bot(token=config.BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     asyncio.run(startTelebot())

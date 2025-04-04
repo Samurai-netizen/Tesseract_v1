@@ -84,4 +84,4 @@ async def add_new_item_pcs_to_db_handler(msg: Message):
 async def declare_new_item_to_db(msg: Message):
     state = "declare_new_item_to_db_1"
     stateUpdate(msg.from_user.id, msg.from_user.first_name, state)
-    await msg.answer("Меню добавления новых товаров в БД склада. Введите SKU товара, который хотите добавить:")
+    await msg.answer("Меню добавления новых товаров в БД склада. Введите артикул (название от продавца) товара, который хотите добавить:")

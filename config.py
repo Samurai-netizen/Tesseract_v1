@@ -6,3 +6,5 @@ MYSQL_ADDRESS = "mysql+pymysql://Samurai:qwaszx1296@127.0.0.1:3306/warehouse"
 
 # Для файла API_requests_list.py | Ключ Озон селлера для создания запросов на их API
 HEADERS = {'Host': 'api-seller.ozon.ru', 'Client-Id': '2435732', 'Api-Key': '2ddf55f0-05e5-484e-9655-d424f72a0e82', "Content-Type": "application/json"}
+
+NGROK_AUTHTOKEN="2vFtbD3jXO8VkOkAiVPEmutHX40_487hcd1XyE8Nsmv6i2hou"

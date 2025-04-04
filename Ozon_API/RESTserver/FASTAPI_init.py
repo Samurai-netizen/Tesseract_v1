@@ -1,44 +1,120 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+import json
+from pyngrok import ngrok
+import uvicorn, nest_asyncio
+from datetime import datetime
+import hmac
+import hashlib
+from config import HEADERS
+
+from Telegram_API.TBot_init import message_sender
+
+
+http_tunnel = ngrok.connect(8000)
+
+print(f"Public URL: {http_tunnel.public_url}")
+
+headers = HEADERS
 
 app = FastAPI()
 
-# Определение модели для задачи
-class Task(BaseModel):
-    id: int
-    title: str
 
-# Данные для примера
-tasks = [
-    Task(id=1, title="Task 1"),
-    Task(id=2, title="Task 2")
-]
+def generate_signature(data, secret_key):
 
-# GET-запрос для получения всех задач
-@app.get("/api/v1/tasks")
-async def get_tasks():
-    return tasks
+    sign_string = json.dumps(data)
 
-# POST-запрос для добавления новой задачи
-@app.post("/api/v1/tasks")
-async def create_task(task: Task):
-    tasks.append(task)
-    return task
+    signature = hmac.new(secret_key.encode(), sign_string.encode(), hashlib.sha256).hexdigest()
 
-# PUT-запрос для обновления задачи
-@app.put("/api/v1/tasks/{task_id}")
-async def update_task(task_id: int, task: Task):
-    task_to_update = next((t for t in tasks if t.id == task_id), None)
-    if task_to_update is None:
-        raise HTTPException(status_code=404, detail="Task not found")
-    task_to_update.title = task.title
-    return task_to_update
+    return signature
 
-# DELETE-запрос для удаления задачи
-@app.delete("/api/v1/tasks/{task_id}")
-async def delete_task(task_id: int):
-    task_to_delete = next((t for t in tasks if t.id == task_id), None)
-    if task_to_delete is None:
-        raise HTTPException(status_code=404, detail="Task not found")
-    tasks.remove(task_to_delete)
-    return {"message": "Task deleted"}
+
+errors = {
+    "EMPTY_SIGN": {"error": "EMPTY_SIGN", "message": "Подпись отсутствует"},
+    "INVALID_SIGN": {"error": "INVALID_SIGN", "message": "Неверная подпись"},
+    "WRONG_PUSH_TYPE": {"error": "WRONG_PUSH_TYPE", "message": "Неверный тип уведомления"},
+    "WRONG_BODY": {"error": "WRONG_BODY", "message": "Неверное тело уведомления"},
+    "EMPTY_BODY": {"error": "EMPTY_BODY", "message": "Пустое тело уведомления"}
+}
+
+result200 = {
+  "result": True
+}
+
+forError = {
+  "error": {
+    "code": "400",
+    "message": "ошибка",
+    "details": "намеренная ошибка от озона"
+  }
+}
+
+dashes = '--------------------------------------------------------------------------'
+
+@app.post("/TYPE_PING")
+async def alert(request: Request):
+    print('')
+    print(dashes)
+    body = await request.body()
+
+    # Проверка пустого тела
+    if not body:
+        print('Ошибка: ', errors["EMPTY_BODY"])
+        print('Время: ', datetime.utcnow().isoformat(sep='T', timespec='seconds'))
+        print(dashes)
+        return JSONResponse(content=errors["EMPTY_BODY"], status_code=400, headers=headers)
+
+    try:
+        json_data = json.loads(body.decode())
+    except json.JSONDecodeError as e:
+        print("JSON crashed")
+        print(body)
+        print('Ошибка: ', errors["WRONG_BODY"])
+        print('Время: ', datetime.utcnow().isoformat(sep='T', timespec='seconds'))
+        print(dashes)
+        return JSONResponse(content=errors["WRONG_BODY"], status_code=400, headers=headers)
+
+    # Проверка подписи
+    #if "sign" not in json_data or not json_data["sign"]:
+        #print("sign error")
+        #return JSONResponse(content=errors["EMPTY_SIGN"], status_code=400, headers=headers)
+
+    # Проверка типа уведомления
+    #if "message_type" not in json_data or json_data["message_type"] != "TYPE_PING":
+        #return JSONResponse(content=errors["WRONG_PUSH_TYPE"], status_code=400, headers=headers)
+
+    match json_data["message_type"]:
+        case 'TYPE_PING':
+            print("TYPE_PING was sent")
+            current_time_utc = datetime.utcnow().isoformat(timespec='seconds') + "Z"
+            print(current_time_utc)
+            TYPE_PINGResult200 = {
+                "version": "string",
+                "name": "string",
+                "time": current_time_utc
+            }
+
+            print('Успех')
+            print('Время: ', datetime.utcnow().isoformat(sep='T', timespec='seconds'))
+            print(dashes)
+            return JSONResponse(content=TYPE_PINGResult200, status_code=200, headers=headers)
+
+        case 'TYPE_STOCKS_CHANGED':
+            print(body)
+            await message_sender(id, str(body))
+            print('Успех')
+            print('Время: ', datetime.utcnow().isoformat(sep='T', timespec='seconds'))
+            print(dashes)
+            return JSONResponse(content=result200, status_code=200, headers=headers)
+
+        case _:
+            print("Something else happened...")
+            print('Ошибка: ', errors["WRONG_PUSH_TYPE"])
+            print('Время: ', datetime.utcnow().isoformat(sep='T', timespec='seconds'))
+            print(dashes)
+            return JSONResponse(content=errors["WRONG_PUSH_TYPE"], status_code=400, headers=headers)
+
+
+nest_asyncio.apply()
+uvicorn.run("FASTAPI_init:app", port=8000)

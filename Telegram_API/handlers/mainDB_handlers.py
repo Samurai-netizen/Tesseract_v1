@@ -40,7 +40,7 @@ async def message_handler(msg: Message):
             if msg.text != "Назад":
                 newArticle(msg.from_user.id, msg.text)
                 stateUpdate(msg.from_user.id, msg.from_user.first_name, "add_new_item_pcs_to_db_2")
-                await msg.answer(f'Введите следущий аргумент:')
+                await msg.answer(f'Введите количество товара:')
 
             else:
                 stateUpdate(msg.from_user.id, msg.from_user.first_name, "homescreen")
@@ -49,16 +49,16 @@ async def message_handler(msg: Message):
             if msg.text != "Назад":
                 newAmount(msg.from_user.id, msg.text)
                 stateUpdate(msg.from_user.id, msg.from_user.first_name, "add_new_item_pcs_to_db_3")
+                temp = fetchArgs(msg.from_user.id)
+                await db_insert(temp[0], temp[1], temp[2])
                 await msg.answer(f'Данные будут введены в систему учёта склада')
-                article, amount, sku = fetchArgs(msg.from_user.id)
-                await db_insert(article, amount, sku)
             else:
                 stateUpdate(msg.from_user.id, msg.from_user.first_name, "homescreen")
 
         case "declare_new_item_to_db_1":
             if msg.text != "Назад":
                 stateUpdate(msg.from_user.id, msg.from_user.first_name, "declare_new_item_to_db_2")
-                await msg.answer(f'Введите артикул товара, который хотите добавить:')
+                await msg.answer(f'Введите SKU товара, который хотите добавить:')
                 newSKUaddChatdb(msg.from_user.id, msg.text)
             else:
                 stateUpdate(msg.from_user.id, msg.from_user.first_name, "homescreen")
