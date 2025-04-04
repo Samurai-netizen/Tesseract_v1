@@ -8,3 +8,5 @@ MYSQL_ADDRESS = "mysql+pymysql://Samurai:qwaszx1296@127.0.0.1:3306/warehouse"
 HEADERS = {'Host': 'api-seller.ozon.ru', 'Client-Id': '2435732', 'Api-Key': '2ddf55f0-05e5-484e-9655-d424f72a0e82', "Content-Type": "application/json"}
 
 NGROK_AUTHTOKEN="2vFtbD3jXO8VkOkAiVPEmutHX40_487hcd1XyE8Nsmv6i2hou"
+
+SQLite_ADDRESS = "C:/Users/Samurai/PycharmProjects/Tesseract_v1/chat_state.db"

@@ -1,15 +1,17 @@
 import sqlite3
 import json
+from config import HEADERS, SQLite_ADDRESS
 
 
 def devDBinit():
     try:
-        with sqlite3.connect('chat_state.db') as connection:
+        with sqlite3.connect(SQLite_ADDRESS) as connection:
             cursor = connection.cursor()
 
             cursor.execute('''
             CREATE TABLE IF NOT EXISTS ChatState (
             id INTEGER PRIMARY KEY,
+            client_id TEXT,
             name TEXT,
             state TEXT NOT NULL,
             iddict TEXT,
@@ -30,7 +32,7 @@ def devDBinit():
 
 def devDB_DROP():
     try:
-        with sqlite3.connect('chat_state.db') as connection:
+        with sqlite3.connect(SQLite_ADDRESS) as connection:
             cursor = connection.cursor()
 
             cursor.execute('''
@@ -48,14 +50,15 @@ def devDB_DROP():
 
 def firstInit(id, name, state):
     print(id, name, state)
+    client_id = HEADERS['Client-Id']
     try:
-        with sqlite3.connect('chat_state.db') as connection:
+        with sqlite3.connect(SQLite_ADDRESS) as connection:
             cursor = connection.cursor()
             cursor.execute('''
-                INSERT INTO ChatState (id, name, state)
-                VALUES(?, ?, ?)
-                ON CONFLICT(id) DO UPDATE SET state = ?;
-            ''', (id, name, state, state))
+                INSERT INTO ChatState (id, client_id, name, state)
+                VALUES(?, ?, ?, ?)
+                ON CONFLICT(id) DO UPDATE SET state = ?, name = ?, client_id = ?;
+            ''', (id, client_id, name, state, state, name, client_id))
     except sqlite3.Error as e:
         print(f"Ошибка в firstInit: {e}")
     except Exception as e:
@@ -66,7 +69,7 @@ def firstInit(id, name, state):
 
 def stateUpdate(id, name, state):
     try:
-        with sqlite3.connect('chat_state.db') as connection:
+        with sqlite3.connect(SQLite_ADDRESS) as connection:
             cursor = connection.cursor()
             cursor.execute('''
                 INSERT INTO ChatState (id, name, state)
@@ -83,7 +86,7 @@ def stateUpdate(id, name, state):
 
 def stateFetch(id):
     try:
-        with sqlite3.connect('chat_state.db') as connection:
+        with sqlite3.connect(SQLite_ADDRESS) as connection:
             cursor = connection.cursor()
             cursor.execute('''
                 SELECT state FROM ChatState WHERE id = ?;
@@ -100,9 +103,32 @@ def stateFetch(id):
         return state[0] if state else None
 
 
+def fetchTelegramID(client_id):
+    try:
+        with sqlite3.connect(SQLite_ADDRESS) as connection:
+            cursor = connection.cursor()
+            cursor.execute('''
+                   SELECT id FROM ChatState WHERE client_id = ?;
+                   ''', (client_id,))
+            result_row = cursor.fetchone()
+            result = result_row[0] if result_row else None
+            print("result: ", result)
+            print("Type: ", type(result))
+
+    except sqlite3.Error as e:
+        print(f"Ошибка в fetchArgs: {e}")
+    except Exception as e:
+        print(f"Общая ошибка блока fetchArgs: {e}")
+    else:
+        print("Fetch args done")
+        print("Telegram id: ", result)
+
+        return result #if args else None
+
+
 def newArticle(id, article):
     try:
-        with sqlite3.connect('chat_state.db') as connection:
+        with sqlite3.connect(SQLite_ADDRESS) as connection:
             cursor = connection.cursor()
             cursor.execute('''
                 UPDATE ChatState
@@ -119,7 +145,7 @@ def newArticle(id, article):
 
 def newAmount(id, amount):
     try:
-        with sqlite3.connect('chat_state.db') as connection:
+        with sqlite3.connect(SQLite_ADDRESS) as connection:
             cursor = connection.cursor()
             cursor.execute('''
                 UPDATE ChatState
@@ -137,7 +163,7 @@ def newAmount(id, amount):
 
 def fetchArgs(id):
     try:
-        with sqlite3.connect('chat_state.db') as connection:
+        with sqlite3.connect(SQLite_ADDRESS) as connection:
             cursor = connection.cursor()
             cursor.execute('''
                    SELECT article FROM ChatState WHERE id = ?;
@@ -181,7 +207,7 @@ def fetchArgs(id):
 
 def newSKUaddChatdb(id, article):
     try:
-        with sqlite3.connect('chat_state.db') as connection:
+        with sqlite3.connect(SQLite_ADDRESS) as connection:
             cursor = connection.cursor()
             cursor.execute('''
                 UPDATE ChatState
@@ -199,7 +225,7 @@ def newSKUaddChatdb(id, article):
 
 def newSKUbond(id, sku):
     try:
-        with sqlite3.connect('chat_state.db') as connection:
+        with sqlite3.connect(SQLite_ADDRESS) as connection:
             connection.row_factory = sqlite3.Row
             cursor = connection.cursor()
             cursor.execute('''

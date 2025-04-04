@@ -9,7 +9,8 @@ import hmac
 import hashlib
 from config import HEADERS
 
-from Telegram_API.TBot_init import message_sender
+from Telegram_API.chat_DB import fetchTelegramID
+from Telegram_API.handlers.indep_transfer import message_sender
 
 
 http_tunnel = ngrok.connect(8000)
@@ -86,7 +87,7 @@ async def alert(request: Request):
 
     match json_data["message_type"]:
         case 'TYPE_PING':
-            print("TYPE_PING was sent")
+            print("TEST REQUEST = TYPE_PING was sent")
             current_time_utc = datetime.utcnow().isoformat(timespec='seconds') + "Z"
             print(current_time_utc)
             TYPE_PINGResult200 = {
@@ -102,6 +103,16 @@ async def alert(request: Request):
 
         case 'TYPE_STOCKS_CHANGED':
             print(body)
+            id = fetchTelegramID(HEADERS['Client-Id'])
+            await message_sender(id, str(body))
+            print('Успех')
+            print('Время: ', datetime.utcnow().isoformat(sep='T', timespec='seconds'))
+            print(dashes)
+            return JSONResponse(content=result200, status_code=200, headers=headers)
+
+        case 'TYPE_NEW_MESSAGE':
+            print(body)
+            id = fetchTelegramID(HEADERS['Client-Id'])
             await message_sender(id, str(body))
             print('Успех')
             print('Время: ', datetime.utcnow().isoformat(sep='T', timespec='seconds'))
