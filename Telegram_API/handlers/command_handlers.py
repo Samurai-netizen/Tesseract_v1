@@ -70,7 +70,7 @@ async def state2_handler(msg: Message):
 async def check_stocks_fbs_handler(msg: Message):
     state = "check_stocks_fbs_1"
     stateUpdate(msg.from_user.id, msg.from_user.first_name, state)
-    await msg.answer("Меню проверки остатков на складах Озон. Введите артикул товара, который хотите проверить:")
+    await msg.answer("Меню проверки остатков на складах Озон. Введите sku товара, который хотите проверить:")
 
 
 @command_router.message(Command("add_new_item_pcs_to_db"))

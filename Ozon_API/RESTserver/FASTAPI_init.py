@@ -9,7 +9,7 @@ import hmac
 import hashlib
 from config import HEADERS
 
-from Telegram_API.chat_DB import fetchTelegramID
+from Telegram_API.chat_DB import fetchTelegramID, fetchArticle
 from Telegram_API.handlers.indep_transfer import message_sender
 
 
@@ -102,18 +102,23 @@ async def alert(request: Request):
             return JSONResponse(content=TYPE_PINGResult200, status_code=200, headers=headers)
 
         case 'TYPE_STOCKS_CHANGED':
-            print(body)
+            print(json_data)
             id = fetchTelegramID(HEADERS['Client-Id'])
-            await message_sender(id, str(body))
+            print(type(json_data))
+            article = fetchArticle(id, str(json_data['items']['sku']))
+            await message_sender(id, str(json_data['items']))
+            await message_sender(id, str(json_data['items']['sku']))
+            await message_sender(id, str(article))
+            await message_sender(id, str(json_data['items']['stocks']['present']))
             print('Успех')
             print('Время: ', datetime.utcnow().isoformat(sep='T', timespec='seconds'))
             print(dashes)
             return JSONResponse(content=result200, status_code=200, headers=headers)
 
         case 'TYPE_NEW_MESSAGE':
-            print(body)
+            print(json_data['data'])
             id = fetchTelegramID(HEADERS['Client-Id'])
-            await message_sender(id, str(body))
+            await message_sender(id, str(json_data['data']))
             print('Успех')
             print('Время: ', datetime.utcnow().isoformat(sep='T', timespec='seconds'))
             print(dashes)

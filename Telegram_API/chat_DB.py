@@ -113,17 +113,74 @@ def fetchTelegramID(client_id):
             result_row = cursor.fetchone()
             result = result_row[0] if result_row else None
             print("result: ", result)
-            print("Type: ", type(result))
 
     except sqlite3.Error as e:
-        print(f"Ошибка в fetchArgs: {e}")
+        print(f"Ошибка в fetchTelegramID: {e}")
     except Exception as e:
-        print(f"Общая ошибка блока fetchArgs: {e}")
+        print(f"Общая ошибка блока fetchTelegramID: {e}")
     else:
-        print("Fetch args done")
+        print("Fetch user's Telegram ID done")
         print("Telegram id: ", result)
 
         return result #if args else None
+
+
+def fetchArticle(client_id, sku):
+    try:
+        with sqlite3.connect(SQLite_ADDRESS) as connection:
+            cursor = connection.cursor()
+            cursor.execute('''
+               SELECT iddict FROM ChatState WHERE id = ?;
+               ''', (int(client_id),))
+            result = cursor.fetchone()
+
+            if not (result is None or not result[0]):  # Если есть запись
+                iddict = json.loads(result[0])
+                article = iddict[sku]
+                print("iddict", iddict)
+
+            if result is None or not result[0]:
+                raise Exception("В базе данных либо ещё нет пар ключ-значение, либо что-то сломалось в fetchArticle")
+
+    except sqlite3.Error as e:
+        print(f"Ошибка sqlite в fetchArticle: {e}")
+    except json.JSONDecodeError as e:
+        print(f"Ошибка декодирования JSON в fetchArticle: {e}")
+    except Exception as e:
+        print(f"Общая ошибка блока fetchArticle: {e}")
+    else:
+        print("Fetching article done (2/2)")
+
+        return article
+
+def fetchSku(id, article):
+    try:
+        with sqlite3.connect(SQLite_ADDRESS) as connection:
+            cursor = connection.cursor()
+            cursor.execute('''
+               SELECT iddict FROM ChatState WHERE id = ?;
+               ''', (int(id),))
+            result = cursor.fetchone()
+
+            if not (result is None or not result[0]):  # Если есть запись
+                iddict = json.loads(result[0])
+                sku = next((key for key, value in iddict.items() if value == article), None)
+                sku = sku.replace("'", "")
+                print("SKU:", sku)
+
+            if result is None or not result[0]:
+                raise Exception("В базе данных либо ещё нет пар ключ-значение, либо что-то сломалось в fetchSku")
+
+    except sqlite3.Error as e:
+        print(f"Ошибка sqlite в fetchSku: {e}")
+    except json.JSONDecodeError as e:
+        print(f"Ошибка декодирования JSON в fetchSku: {e}")
+    except Exception as e:
+        print(f"Общая ошибка блока fetchSku: {e}")
+    else:
+        print("Fetching sku by article done (2/2)")
+
+        return sku
 
 
 def newArticle(id, article):

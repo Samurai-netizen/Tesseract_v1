@@ -15,3 +15,5 @@
 mysql -u root -p (Вместо root - Samurai)
 mysql -u Samurai -p
 net start mysqlTesseract / net stop mysqlTesseract
+ngrok config add-authtoken 2vFtbD3jXO8VkOkAiVPEmutHX40_487hcd1XyE8Nsmv6i2hou
+ngrok http 80

@@ -2,7 +2,7 @@ from aiogram import types, F, Router
 from aiogram.types import Message
 from aiogram.filters import Command
 
-from Telegram_API.chat_DB import devDBinit, firstInit, stateUpdate, stateFetch, newAmount, newArticle, fetchArgs, newSKUbond, newSKUaddChatdb
+from Telegram_API.chat_DB import devDBinit, firstInit, stateUpdate, stateFetch, newAmount, newArticle, fetchArgs, newSKUbond, newSKUaddChatdb, fetchArticle, fetchSku
 
 from Database.DB_Conn import db_insert
 
@@ -30,7 +30,8 @@ async def message_handler(msg: Message):
 
         case "check_stocks_fbs_1":
             if msg.text != "Назад":
-                output = await v1_product_info_stocks_by_warehouse_fbs(msg.text)
+                sku = fetchSku(msg.from_user.id, msg.text)
+                output = await v1_product_info_stocks_by_warehouse_fbs(sku)
                 print(output)
                 await msg.answer(f"{output}")
             else:
