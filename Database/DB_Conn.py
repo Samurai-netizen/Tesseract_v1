@@ -119,6 +119,21 @@ async def db_goods_insert(article, amount, sku):  #id=3, article='DOMB', amount=
 
     return "done"
 
+
+async def DB_orders_insert(name, amount, price_rmb_1pcs, price_rmb_total, if_paid, date_paid, date_china_arrival, shipment_id, total_mass_kg, estimated_arrival, fact_arrival, if_picked_up, if_problems):
+
+    with engine.connect() as connection:
+        try:
+            date_today = datetime.date.today()
+            insert_query = insert(orders).values(name=name, amount=amount, price_rmb_1pcs=price_rmb_1pcs, price_rmb_total=price_rmb_total, if_paid=if_paid, date_paid=date_paid, date_china_arrival=date_china_arrival, shipment_id=shipment_id, total_mass_kg=total_mass_kg, estimated_arrival=estimated_arrival, fact_arrival=fact_arrival, if_picked_up=if_picked_up, if_problems=if_problems)
+            connection.execute(insert_query)
+            connection.commit()
+            print("inserted")
+        except:
+            print("Insert failure")
+            return "error"
+    return "done"
+
 async def db_goods_update(*args):  #id=3, article='DOMB', amount=77, buy_price_rmb=2000, margin=24.4
 
     print("data_to_insert", args[0], args[1],args[2])

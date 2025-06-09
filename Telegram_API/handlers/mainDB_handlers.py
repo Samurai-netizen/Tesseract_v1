@@ -2,9 +2,11 @@ from aiogram import types, F, Router
 from aiogram.types import Message
 from aiogram.filters import Command
 
+import os
+
 from Telegram_API.chat_DB import devDBinit, firstInit, stateUpdate, stateFetch, newAmount, newArticle, fetchArgs, newSKUbond, newSKUaddChatdb, fetchArticle, fetchSku
 
-from Database.DB_Conn import db_insert
+from Database.DB_Conn import db_goods_insert
 
 from Ozon_API.API_requests_list import v1_product_info_stocks_by_warehouse_fbs
 
@@ -51,7 +53,7 @@ async def message_handler(msg: Message):
                 newAmount(msg.from_user.id, msg.text)
                 stateUpdate(msg.from_user.id, msg.from_user.first_name, "add_new_item_pcs_to_db_3")
                 temp = fetchArgs(msg.from_user.id)
-                await db_insert(temp[0], temp[1], temp[2])
+                await db_goods_insert(temp[0], temp[1], temp[2])
                 await msg.answer(f'Данные будут введены в систему учёта склада')
             else:
                 stateUpdate(msg.from_user.id, msg.from_user.first_name, "homescreen")
