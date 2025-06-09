@@ -1,202 +1,282 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            color: var(--tg-theme-text-color);
-            background: var(--tg-theme-bg-color);
-        }
-
-        .Main {
-            width: 100%;
-            padding: 25px;
-            text-align: center;
-
-        }
-
-        h1 {
-            margin-top: 40px;
-            margin-bottom: 10px;
-        }
-
-        img {
-            width: 70px;
-            margin: 30px auto;
-        }
-
-
-        .telegram-form {
-      background: #fff;
-      max-width: 400px;
-      margin: 40px auto;
-      padding: 32px 24px;
-      border-radius: 18px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Тестовое приложение</title>
+  <style>
+    /* Сброс и базовые стили */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     }
+
+    body {
+      background: #f3f6f8;
+      color: #222;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .Main {
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      padding: 40px 30px 30px;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-weight: 700;
+      font-size: 24px;
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+
+    img {
+      width: 80px;
+      margin: 0 auto 30px;
+      display: block;
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn {
+      background: #2a8ddb;
+      color: white;
+      border: none;
+      padding: 14px 0;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 12px rgba(42, 141, 219, 0.4);
+    }
+
+    .btn:hover {
+      background: #1f6fb8;
+      box-shadow: 0 6px 16px rgba(31, 111, 184, 0.6);
+    }
+
+    /* Форма с полями - изначально скрыта */
+    form.test-form {
+      max-width: 420px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      padding: 36px 30px 30px;
+      display: none;
+      flex-direction: column;
+    }
+
+    form.test-form.active {
+      display: flex;
+    }
+
     .form-row {
       display: flex;
       align-items: center;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
     }
-    .form-row:last-child {
-      margin-bottom: 0;
-    }
+
     .form-label {
-      flex: 1 0 120px;
-      color: #2a2f3a;
+      flex: 0 0 130px;
       font-size: 15px;
-      margin-right: 12px;
+      color: #4a4a4a;
+      font-weight: 600;
+      user-select: none;
     }
+
     .form-input {
-      flex: 2 0 0;
-      padding: 8px 12px;
-      border: 1px solid #d1d8dd;
-      border-radius: 8px;
+      flex: 1;
+      padding: 10px 14px;
       font-size: 15px;
+      border: 1.5px solid #d0d7de;
+      border-radius: 10px;
+      background: #f9fbfd;
+      transition: border-color 0.3s ease, background-color 0.3s ease;
       outline: none;
-      background: #f7fafd;
-      transition: border 0.2s;
     }
+
     .form-input:focus {
-      border: 1.5px solid #6ab3f7;
-      background: #fff;
+      border-color: #2a8ddb;
+      background-color: #ffffff;
+      box-shadow: 0 0 8px rgba(42, 141, 219, 0.3);
     }
+
     .form-checkbox {
-      width: 18px;
-      height: 18px;
-      accent-color: #6ab3f7;
+      width: 20px;
+      height: 20px;
+      accent-color: #2a8ddb;
+      cursor: pointer;
       margin-right: 12px;
     }
+
     .checkbox-class-label {
       font-size: 15px;
-      color: #6ab3f7;
+      color: #2a8ddb;
       font-family: monospace;
-      background: #f1f7fb;
-      border-radius: 6px;
-      padding: 2px 8px;
-      margin-left: 8px;
-      user-select: all;
-    }
-    .submit-btn {
-      width: 100%;
-      padding: 11px 0;
-      border: none;
+      background: #e6f0fa;
       border-radius: 8px;
-      background: linear-gradient(90deg, #6ab3f7 0%, #3a8dde 100%);
-      color: #fff;
-      font-size: 16px;
-      font-weight: 600;
+      padding: 4px 10px;
+      user-select: all;
       cursor: pointer;
-      transition: background 0.2s;
-      margin-top: 18px;
-    }
-    .submit-btn:hover {
-      background: linear-gradient(90deg, #5ca3e6 0%, #357ec7 100%);
+      flex: 1;
     }
 
-    </style>
+    /* Кнопка отправки */
+    .submit-btn {
+      margin-top: 24px;
+      background: linear-gradient(90deg, #2a8ddb 0%, #1f6fb8 100%);
+      color: white;
+      font-weight: 700;
+      font-size: 17px;
+      padding: 14px 0;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(42, 141, 219, 0.5);
+      transition: background 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      background: linear-gradient(90deg, #1f6fb8 0%, #1661a1 100%);
+    }
+
+    /* Дополнительные инпуты в тестовой форме */
+    .test-form input[type="text"],
+    .test-form input[type="checkbox"] {
+      margin-bottom: 16px;
+      padding: 10px 14px;
+      font-size: 15px;
+      border: 1.5px solid #d0d7de;
+      border-radius: 10px;
+      background: #f9fbfd;
+      outline: none;
+      width: 100%;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease, background-color 0.3s ease;
+    }
+
+    .test-form input[type="text"]:focus {
+      border-color: #2a8ddb;
+      background-color: #ffffff;
+      box-shadow: 0 0 8px rgba(42, 141, 219, 0.3);
+    }
+
+    .test-form input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: #2a8ddb;
+      cursor: pointer;
+      margin-right: 12px;
+      vertical-align: middle;
+    }
+
+    /* Метки рядом с чекбоксами */
+    .checkbox-label-inline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      font-size: 15px;
+      color: #2a8ddb;
+      cursor: pointer;
+      user-select: none;
+    }
+  </style>
 </head>
 <body>
-    <div class="Main">
-        <h1>Тестовое приложение</h1>
-        <img src="{{ url_for('static', filename='bot.png') }}" alt="pic">
-        <p></p>
-        <button class="btn f-btn">Тест отправки данных</button>
-    </div>
-    <form class="telegram-form">
+  <div class="Main">
+    <h1>Тестовое приложение</h1>
+    <img src="bot.png" alt="bot" />
+    <button class="btn f-btn" type="button">Тест отправки данных</button>
+  </div>
+
+  <form class="test-form" novalidate>
     <div class="form-row">
-      <label class="form-label" for="username">Имя пользователя</label>
-      <input class="form-input" type="text" id="username" name="username" placeholder="Введите имя">
-    </div>
-    <div class="form-row">
-      <input class="form-checkbox my-checkbox" type="checkbox" id="my-checkbox" name="my-checkbox">
-      <label for="my-checkbox" class="checkbox-class-label">my-checkbox</label>
+      <label class="form-label">Форма для отправки данных</label>
     </div>
     <div class="form-row">
-      <input class="form-checkbox agree-checkbox" type="checkbox" id="agree-checkbox" name="agree-checkbox">
-      <label for="agree-checkbox" class="checkbox-class-label">agree-checkbox</label>
     </div>
+    <input type="text" placeholder="name" class="name-inp" />
+    <input type="text" placeholder="amount" class="amount-inp" />
+    <input type="text" placeholder="price_rmb_1pcs" class="price_rmb_1pcs-inp" />
+    <input type="text" placeholder="price_rmb_total" class="price_rmb_total-inp" />
+    <label class="checkbox-label-inline">
+      <input type="checkbox" class="if_paid-inp" />
+      <span>if_paid</span>
+    </label>
+    <input type="text" placeholder="shipment_id" class="shipment_id-inp" />
+    <input type="text" placeholder="total_mass_kg" class="total_mass_kg-inp" />
+    <label class="checkbox-label-inline">
+      <input type="checkbox" class="if_picked_up-inp" />
+      <span>if_picked_up</span>
+    </label>
+    <label class="checkbox-label-inline">
+      <input type="checkbox" class="if_problems-inp" />
+      <span>if_problems</span>
+    </label>
+    <button class="submit-btn s-btn" type="button">Отправить</button>
   </form>
-    <form class="test-form">
-        <div class="form-row">
-            <label class="form-label" for="username">Имя пользователя</label>
-            <input class="form-input" type="text" id="username" name="username" placeholder="Введите имя">
-        </div>
-        <div class="form-row">
-            <input class="form-checkbox my-checkbox" type="checkbox" id="my-checkbox" name="my-checkbox">
-            <label for="my-checkbox" class="checkbox-class-label">my-checkbox</label>
-        </div>
-        <input type="text" placeholder="name" class="name-inp">
-        <input type="text" placeholder="amount" class="amount-inp">
-        <input type="text" placeholder="price_rmb_1pcs" class="price_rmb_1pcs-inp">
-        <input type="text" placeholder="price_rmb_total" class="price_rmb_total-inp">
-        <input type="checkbox" placeholder="if_paid" class="if_paid-inp">
-        <!--<input type="text" placeholder="date_paid" class="date_paid-inp">
-        <input type="text" placeholder="date_china_arrival" class="date_china_arrival-inp">-->
-        <input type="text" placeholder="shipment_id" class="shipment_id-inp">
-        <input type="text" placeholder="total_mass_kg" class="total_mass_kg-inp">
-        <!--<input type="text" placeholder="estimated_arrival" class="estimated_arrival-inp">
-        <input type="text" placeholder="fact_arrival" class="fact_arrival-inp">-->
-        <input type="checkbox" placeholder="if_picked_up" class="if_picked_up-inp">
-        <input type="checkbox" placeholder="if_problems" class="if_problems-inp">
-        <button class="btn s-btn">Отправить</button>
-    </form>
 
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    const tg = window.Telegram.WebApp;
 
-    <script>
-        let tg = window.Telegram.WebApp;
+    const fBtn = document.querySelector(".f-btn");
+    const mainDiv = document.querySelector(".Main");
+    const testForm = document.querySelector(".test-form");
 
-        let fBtn = document.getElementsByClassName("f-btn")[0]
-        let sBtn = document.getElementsByClassName("s-btn")[0]
+    // При загрузке показываем только главное меню
+    mainDiv.style.display = "block";
+    testForm.classList.remove("active");
 
-        fBtn.addEventListener("click", () => {
-            document.getElementsByClassName("Main")[0].style.display = "none";
-            document.getElementsByClassName("test-form")[0].style.display = "block";
-        });
+    fBtn.addEventListener("click", () => {
+      mainDiv.style.display = "none";      // скрываем главное меню
+      testForm.classList.add("active");    // показываем форму с полями
+    });
 
-        sBtn.addEventListener("click", () => {
-            let name = document.getElementsByClassName("name-inp")[0];
-            let amount = document.getElementsByClassName("amount-inp")[0];
-            let price_rmb_1pcs = document.getElementsByClassName("price_rmb_1pcs-inp")[0];
-            let price_rmb_total = document.getElementsByClassName("price_rmb_total-inp")[0];
-            let if_paid = document.getElementsByClassName("if_paid-inp")[0];
-            //let date_paid = document.getElementsByClassName("date_paid-inp")[0];
-            //let date_china_arrival = document.getElementsByClassName("date_china_arrival-inp")[0];
-            let shipment_id = document.getElementsByClassName("shipment_id-inp")[0];
-            let total_mass_kg = document.getElementsByClassName("total_mass_kg-inp")[0];
-            //let estimated_arrival = document.getElementsByClassName("estimated_arrival-inp")[0];
-            //let fact_arrival = document.getElementsByClassName("fact_arrival-inp")[0];
-            let if_picked_up = document.getElementsByClassName("if_picked_up-inp")[0];
-            let if_problems = document.getElementsByClassName("if_problems-inp")[0];
+    const sBtn = document.querySelector(".s-btn");
+    sBtn.addEventListener("click", () => {
+      const name = document.querySelector(".name-inp").value.trim();
+      const amount = document.querySelector(".amount-inp").value.trim();
+      const price_rmb_1pcs = document.querySelector(".price_rmb_1pcs-inp").value.trim();
+      const price_rmb_total = document.querySelector(".price_rmb_total-inp").value.trim();
+      const if_paid = document.querySelector(".if_paid-inp").checked;
+      const shipment_id = document.querySelector(".shipment_id-inp").value.trim();
+      const total_mass_kg = document.querySelector(".total_mass_kg-inp").value.trim();
+      const if_picked_up = document.querySelector(".if_picked_up-inp").checked;
+      const if_problems = document.querySelector(".if_problems-inp").checked;
 
+      const data = {
+        name,
+        amount,
+        price_rmb_1pcs,
+        price_rmb_total,
+        if_paid,
+        shipment_id,
+        total_mass_kg,
+        if_picked_up,
+        if_problems,
+      };
 
-            let data = {
-                name: name.value,
-                amount: amount.value,
-                price_rmb_1pcs: price_rmb_1pcs.value,
-                price_rmb_total: price_rmb_total.value,
-                if_paid: if_paid.value,
-                shipment_id: shipment_id.value,
-                total_mass_kg: total_mass_kg.value,
-                if_picked_up: if_picked_up.value,
-                if_problems: if_problems.value
-            }
+      console.log("Отправляем данные:", data);
 
-            console.log(JSON.stringify(data));
-
-            tg.sendData(JSON.stringify(data));
-            tg.close();
-        });
-    </script>
+      tg.sendData(JSON.stringify(data));
+      tg.close();
+    });
+  </script>
 </body>
 </html>
